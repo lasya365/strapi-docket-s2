@@ -44,6 +44,9 @@ export const actionTypes = {
   'token.update': 'Update token',
   'token.delete': 'Delete token',
   'token.regenerate': 'Regenerate token',
+  'webhook.create': 'Create webhook',
+  'webhook.update': 'Update webhook',
+  'webhook.delete': 'Delete webhook',
 };
 
 export const getDefaultMessage = (value: keyof typeof actionTypes) => {
