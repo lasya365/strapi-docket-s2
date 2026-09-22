@@ -77,21 +77,21 @@ describeOnCondition(edition === 'EE')('Audit logs', () => {
     await builder.cleanup();
   });
 
-  test('Ignores non-audit-log events emitted to the eventHub', async () => {
-    const res = await rq({
-      method: 'POST',
-      url: '/admin/webhooks',
-      body: {
-        name: 'test',
-        url: 'https://strapi.io',
-        headers: {},
-        events: [],
-      },
+  test('Ignores admin requests that emit no audited event (webhook trigger)', async () => {
+    // Created through the store so that only the trigger request is under test.
+    // The port is closed: the runner reports the failed delivery, nothing is sent.
+    const webhook = await strapi.get('webhookStore').createWebhook({
+      name: 'test',
+      url: 'http://127.0.0.1:9',
+      headers: {},
+      events: [],
     });
+
+    const res = await rq({ method: 'POST', url: `/admin/webhooks/${webhook.id}/trigger` });
 
     const { body } = await rq({ method: 'GET', url: '/admin/audit-logs' });
 
-    expect(res.statusCode).toBe(201);
+    expect(res.statusCode).toBe(200);
     expect(body.results.length).toBe(3);
   });
 
